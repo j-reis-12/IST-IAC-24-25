@@ -1,0 +1,51 @@
+# ===========================================================
+# Descricao da ISA Implementada
+#
+# == Formato das Instrucoes ==
+#
+# Tipo 1:     imm    | opcode   (opcode != 11)
+#         7         2 1      0
+#
+# Tipo 2:  imm | set | opcode   (opcode == 11)
+#         7   3   2   1      0
+#
+# Nota: no tipo 2, o imediato é descartado. O bit 'set' distingue as operações 'abs' (1) e 'relu' (0).
+#
+# Devido à limitação de 8 bits para cada instrução, decidiu-se utilizar apenas 2 bits para o opcode,
+# de modo a maximizar o número de bits disponíveis para o imediato.
+#
+# O tipo 1 cobre as operações 'add', 'sub' e 'li'. O imediato é sempre sem sinal, de modo a obter-se
+# uma maior faixa de números disponíveis sem perda de funcionalidade (no caso de um 'li' de um número
+# negativo, basta trocar o código por li 0 + sub 'const positiva').
+#
+# O tipo 2 cobre as operações 'abs' e 'relu', que puderam ser juntadas num só opcode por apenas
+# necessitarem do valor no registo a utilizar, através do bit 'set'. Assim, consegue-se reduzir o
+# número de bits do opcode para 2, mas oferecer as 5 operações possíveis.
+#
+# - Sem Estágios de Pipeline
+# As instruções dos programas são processadas e executadas de seguida. Não se achou necessária a
+# implementação de pipelining no circuito.
+#
+# == Sinais de Controlo ==
+#
+# a | IMM OUT: Indica que o imediato deve ser diretamente escrito no registo.
+#
+# b | ALU SUBTRACT: Indica se o circuito da ALU devolve o resultado da operação 'sub', ao invés de 'add'.
+#
+# c | ALU OUT: Indica que a entrada a escrever provém da ALU.
+#
+# d | ABS / RELU OUT: Indica que a entrada a escrever provém do circuito das operações 'abs' e 'relu'.
+#
+# ===========================================================
+# Top-3 das otimizacoes:
+#
+# 1. Utilização de buffers e sinais de controlo para, ao executar instruções, apenas deixar passar sinal
+# nas secções do circuito a utilizar.
+#
+# 2. Encoding / decode de instruções eficiente e compacto, permitindo 5 (ou mais) possibilidades com um
+opcode de 2 bits e imediatos maiores.
+#
+# 3. Junção das lógicas das operações 'abs' e 'relu', com constantes de controlo e um seletor utilizados
+nas duas operações.
+#
+# ===========================================================
